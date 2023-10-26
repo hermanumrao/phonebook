@@ -3,25 +3,30 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define ALPHA_MAX 27
+#define ALPHA_MAX 28  
 
 struct root_node {
-    char value;
     struct root_node* word[ALPHA_MAX];
     bool word_end;
+    char* num;
 };
 
-int my_atoi (char ch)
-{
-    int i=(int)(ch - 'a');
-    if (i==32) return 123;
-    else return i;
+int my_atoi(char ch) {
+    if (ch == ' ') {
+        return 26; 
+    } else if (ch >= 'a' && ch <= 'z') {
+        return (int)(ch - 'a');
+    } else if (ch == '\0') {
+        return 27; 
+    } else {
+        return -1; 
+    }
 }
 
-struct root_node* init_node(char ch, bool end) {
+struct root_node* init_node(bool end) {
     struct root_node* node = (struct root_node*)malloc(sizeof(struct root_node));
-    node->value = ch;
     node->word_end = end;
+    node->num = NULL;
     for (int i = 0; i < ALPHA_MAX; i++) {
         node->word[i] = NULL;
     }
@@ -29,11 +34,9 @@ struct root_node* init_node(char ch, bool end) {
 }
 
 void display_root(struct root_node* node) {
-    printf("%c", node->value);
     if (node->word_end == true) {
-        printf("*");
+        printf("* %s\n", node->num);
     }
-    printf("\n");
     for (int i = 0; i < ALPHA_MAX; i++) {
         if (node->word[i] != NULL) {
             display_root(node->word[i]);
@@ -41,67 +44,66 @@ void display_root(struct root_node* node) {
     }
 }
 
-void AddNode(struct root_node* root, char ch, bool end) {
-    struct root_node* pnode = init_node(ch, end);
-    root->word[my_atoi(ch)] = pnode;
+void AddNode(struct root_node* root, char ch, char str[10], bool end) {
+    struct root_node* cnode = init_node(end);
+    root->word[my_atoi(ch)] = cnode;
+    if (end) {
+        cnode->num = strdup(str);
+    }
 }
 
-void insert_word(struct root_node* root, const char* wr) {
+void insert_word(struct root_node* root, const char* wr, char str[10]) {
     int len = strlen(wr);
-    for (int i = 0; i < len - 1; i++) {
-        if (root->word[my_atoi(wr[i])] == NULL) {
-            AddNode(root, wr[i], false);
+    for (int i = 0; i <= len; i++) { // Include the end-of-string marker '\0'
+        int idx = my_atoi(wr[i]);
+        if (idx == -1) {
+            return; // Invalid character
         }
-        root = root->word[my_atoi(wr[i])];
-    }
-    char last = wr[len - 1];
-    if (root->word[my_atoi(last)] == NULL) {
-        AddNode(root, last, true);
-    } else {
-        root->word[my_atoi(last)]->word_end = true;
+        if (root->word[idx] == NULL) {
+            AddNode(root, wr[i], str, i == len);
+        }
+        root = root->word[idx];
     }
 }
 
-bool search_trie(struct root_node* node, const char* ch) {
+char* search_trie(struct root_node* node, const char* ch) {
     int len = strlen(ch);
-    for (int i = 0; i < len - 1; i++) {
-        if (node->word[my_atoi(ch[i])] == NULL) {
-            return false;
+    for (int i = 0; i <= len; i++) { // Include the end-of-string marker '\0'
+        int idx = my_atoi(ch[i]);
+        if (idx == -1) {
+            return NULL; // Invalid character
         }
-        if (node->word[my_atoi(ch[i])]->value == ch[i]) {
-            node = node->word[my_atoi(ch[i])];
-        } else {
-            return false;
+        if (node->word[idx] == NULL) {
+            return NULL;
         }
+        node = node->word[idx];
     }
-    if (node->word[my_atoi(ch[len-1])]->value == ch[len - 1]) {
-        if (node->word[my_atoi(ch[len-1])]->word_end == true) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
+    if (node->word_end == true) {
+        return node->num;
     }
+    return NULL;
 }
 
 int main() {
-    struct root_node* root = init_node('_', true);
-    insert_word(root, "done ");
-    insert_word(root, "asd3rrf ");
-    insert_word(root, "do r3gt4");
-    insert_word(root, "dont efk");
-    insert_word(root, "blast ");
-    insert_word(root, "win");
-    insert_word(root, "won");
+    struct root_node* root = init_node(false);
+    insert_word(root, "do ne", "1234567890");
+    insert_word(root, "asd rrf", "1234567891");
+    insert_word(root, "don fe ", "1234567892");
+    insert_word(root, "blast ", "1234567894");
+    insert_word(root, "win", "1234567895");
+    insert_word(root, "won", "1234567896");
+    insert_word(root, "done ", "1234567897");
 
-    display_root(root);
-    bool a = search_trie(root, "blast ");
-    if (a == true) {
-        printf("found\n");
+    char* ans = search_trie(root, "do ne");
+    if (ans != NULL) {
+        printf("Found: %s\n", ans);
     } else {
-        printf("missing\n");
+        printf("Not found\n");
     }
+
+    //display_root(root);
+
+    free(root);
 
     return 0;
 }
