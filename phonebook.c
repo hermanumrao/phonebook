@@ -54,10 +54,10 @@ void AddNode(struct root_node* root, char ch, char str[10], bool end) {
 
 void insert_word(struct root_node* root, const char* wr, char str[10]) {
     int len = strlen(wr);
-    for (int i = 0; i <= len; i++) { // Include the end-of-string marker '\0'
+    for (int i = 0; i <= len; i++) { 
         int idx = my_atoi(wr[i]);
         if (idx == -1) {
-            return; // Invalid character
+            return; 
         }
         if (root->word[idx] == NULL) {
             AddNode(root, wr[i], str, i == len);
@@ -86,7 +86,8 @@ char* search_trie(struct root_node* node, const char* ch) {
 
 int main() {
     struct root_node* root = init_node(false);
-    insert_word(root, "do ne", "1234567890");
+    char name[64];
+    char num[11];
     insert_word(root, "asd rrf", "1234567891");
     insert_word(root, "don fe ", "1234567892");
     insert_word(root, "blast ", "1234567894");
@@ -94,7 +95,25 @@ int main() {
     insert_word(root, "won", "1234567896");
     insert_word(root, "done ", "1234567897");
 
-    char* ans = search_trie(root, "do ne");
+    printf("how many list items");
+    int i;
+    scanf("%d",&i);
+    printf("\n enter list:------------------------------------------\n");
+    while (i>0)
+    {
+        i=i-1;
+        printf("Enter name:");
+        scanf("%s",name);
+        printf("Enter number:");
+        scanf("%s",num);
+        //printf("%s %s",name,num);
+        insert_word(root,name,num);
+    }
+
+    printf("Enter name to search for:");
+    scanf("%s",name);
+
+    char* ans = search_trie(root, name);
     if (ans != NULL) {
         printf("Found: %s\n", ans);
     } else {
