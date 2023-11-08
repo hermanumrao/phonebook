@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -103,7 +104,8 @@ int main() {
     {
         i=i-1;
         printf("Enter name:");
-        scanf("%s",name);
+        __fpurge(stdin);
+        scanf("%[^\n]",name);
         printf("Enter number:");
         scanf("%s",num);
         //printf("%s %s",name,num);
@@ -111,7 +113,8 @@ int main() {
     }
 
     printf("Enter name to search for:");
-    scanf("%s",name);
+    __fpurge(stdin);
+    scanf("%[^\n]",name);
 
     char* ans = search_trie(root, name);
     if (ans != NULL) {
