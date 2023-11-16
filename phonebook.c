@@ -34,39 +34,23 @@ struct root_node* init_node(bool end) {
     return node;
 }
 
-void display_root(struct root_node* node) {
+void display_root_helper(struct root_node* node, char str[], int level) {
     if (node->word_end == true) {
-        printf("* %s\n", node->num);
+        str[level] = '\0'; 
+        printf("* %s %s\n", node->num, str);
     }
     for (int i = 0; i < ALPHA_MAX; i++) {
         if (node->word[i] != NULL) {
-            int asciiValue = 97+i; 
-            char character = (char)asciiValue;
-            printf("%c",character);
-            display_root(node->word[i]);
+            str[level] = (i == 26) ? ' ' : (char)('a' + i);
+            display_root_helper(node->word[i], str, level + 1);
         }
     }
 }
 
-void display_all(struct root_node* node, char* current_word) {
-    if (node->word_end == true) {
-        printf("* %s %s\n", node->num, current_word);
-    }
-    for (int i = 0; i < ALPHA_MAX; i++) {
-        if (node->word[i] != NULL) {
-            char new_word[64];
-            strcpy(new_word, current_word);
-            if (i == 26) {
-                strcat(new_word, " ");
-            } else {
-                char temp[2] = {i + 'a', '\0'}; 
-                strcat(new_word, temp);
-            }
-            display_all(node->word[i], new_word);
-        }
-    }
+void display_root(struct root_node* root) {
+    char str[100]; 
+    display_root_helper(root, str, 0);
 }
-
 
 void AddNode(struct root_node* root, char ch, char str[10], bool end) {
     struct root_node* cnode = init_node(end);
@@ -119,7 +103,9 @@ int main() {
     insert_word(root, "won", "1234567896");
     insert_word(root, "done ", "1234567897");
 
-    display_all(root,"");
+    char str[100];
+    printf("Patterns present in the TRIE data structure\n");
+    display_root(root);
 
     printf("how many list items");
     int i;
