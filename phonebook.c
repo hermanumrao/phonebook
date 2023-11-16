@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -104,37 +104,46 @@ int main() {
     insert_word(root, "done ", "1234567897");
 
     char str[100];
-    printf("Patterns present in the TRIE data structure\n");
-    display_root(root);
+        int i=0;
+    
+    do{
 
-    printf("how many list items");
-    int i;
-    scanf("%d",&i);
-    printf("\n enter list:------------------------------------------\n");
-    while (i>0)
-    {
-        i=i-1;
-        printf("Enter name:");
-        __fpurge(stdin);
-        scanf("%[^\n]",name);
-        printf("Enter number:");
-        scanf("%s",num);
-        //printf("%s %s",name,num);
-        insert_word(root,name,num);
+        printf("Select the options --->");
+        printf("1. Create a new contact 2. Search the contact 3. Display all the contact 4. Exit");
+        scanf("%d",&i);
+        switch(i){
+                case 1: printf("\n enter list:------------------------------------------\n");
+                         printf("Enter name:");
+                        __fpurge(stdin);
+                        scanf("%[^\n]",name);
+                         printf("Enter number:");
+                        scanf("%s",num);
+                         if(strlen(num)==10 && (int)num[0]>=6){
+                            //printf("%s %s",name,num);
+                                insert_word(root,name,num);
+                            }
+                        else{
+                                printf("Please re enter the value \n\n");
+                                continue;
+                            }
+                        break;
+                case 2: printf("Enter name to search for:");
+                         __fpurge(stdin);
+                        scanf("%[^\n]",name);
+                        char* ans = search_trie(root, name);
+                        if (ans != NULL) {
+                                 printf("Found: %s\n", ans);
+                        } else {
+                             printf("Not found\n");
+                         }
+                        break;
+                case 3:
+                        display_root(root);
+                        break;
+        }
     }
 
-    printf("Enter name to search for:");
-    __fpurge(stdin);
-    scanf("%[^\n]",name);
-
-    char* ans = search_trie(root, name);
-    if (ans != NULL) {
-        printf("Found: %s\n", ans);
-    } else {
-        printf("Not found\n");
-    }
-
-    //display_root(root);
+    while(i<4);
 
     free(root);
 
