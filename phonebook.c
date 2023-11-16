@@ -40,10 +40,33 @@ void display_root(struct root_node* node) {
     }
     for (int i = 0; i < ALPHA_MAX; i++) {
         if (node->word[i] != NULL) {
+            int asciiValue = 97+i; 
+            char character = (char)asciiValue;
+            printf("%c",character);
             display_root(node->word[i]);
         }
     }
 }
+
+void display_all(struct root_node* node, char* current_word) {
+    if (node->word_end == true) {
+        printf("* %s %s\n", node->num, current_word);
+    }
+    for (int i = 0; i < ALPHA_MAX; i++) {
+        if (node->word[i] != NULL) {
+            char new_word[64];
+            strcpy(new_word, current_word);
+            if (i == 26) {
+                strcat(new_word, " ");
+            } else {
+                char temp[2] = {i + 'a', '\0'}; 
+                strcat(new_word, temp);
+            }
+            display_all(node->word[i], new_word);
+        }
+    }
+}
+
 
 void AddNode(struct root_node* root, char ch, char str[10], bool end) {
     struct root_node* cnode = init_node(end);
@@ -58,7 +81,7 @@ void insert_word(struct root_node* root, const char* wr, char str[10]) {
     for (int i = 0; i <= len; i++) { 
         int idx = my_atoi(wr[i]);
         if (idx == -1) {
-            return; 
+            return;
         }
         if (root->word[idx] == NULL) {
             AddNode(root, wr[i], str, i == len);
@@ -95,6 +118,8 @@ int main() {
     insert_word(root, "win", "1234567895");
     insert_word(root, "won", "1234567896");
     insert_word(root, "done ", "1234567897");
+
+    display_all(root,"");
 
     printf("how many list items");
     int i;
